@@ -1,0 +1,13 @@
+# Ignore files not needed for production run
+.git/
+.github/
+docs/
+tests/
+tmp/
+*.log
+webui/node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+.idea/
+.vscode/
