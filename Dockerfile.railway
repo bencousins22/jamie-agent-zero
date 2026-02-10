@@ -35,6 +35,9 @@ RUN pip install --no-cache-dir -r requirements.txt || \
 
 # Explicitly ensure critical UI and Agent dependencies are installed
 # We list them here because requirements.txt can fail on some systems
+# CORE OPTIMIZATION: Install CPU-only PyTorch to save ~4GB of space
+RUN pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+
 RUN pip install --no-cache-dir \
     flask[async] \
     python-socketio \
@@ -53,10 +56,13 @@ RUN pip install --no-cache-dir \
     unstructured-client \
     lxml_html_clean \
     newspaper3k \
-    paramiko
+    paramiko && \
+    rm -rf /root/.cache/pip
 
 # Install playwright for browser agent
-RUN playwright install chromium 2>/dev/null || true
+RUN playwright install chromium 2>/dev/null && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /root/.cache/ms-playwright/chromium-*/chrome-linux/chrome_sandbox
 
 # Set up Nginx config
 COPY nginx.conf /etc/nginx/nginx.conf
